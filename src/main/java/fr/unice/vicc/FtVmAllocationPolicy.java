@@ -53,16 +53,26 @@ public class FtVmAllocationPolicy extends VmAllocationPolicy{
 
     @Override
     public void deallocateHostForVm(Vm vm) {
-
+        //Remove the VM on each host in the hoster
+        for(Host h : hoster.values()) {
+            h.vmDestroy(vm);
+        }
     }
 
     @Override
     public Host getHost(Vm vm) {
-        return null;
+        return vm.getHost();
     }
 
     @Override
-    public Host getHost(int i, int i1) {
+    public Host getHost(int vmId, int userId) {
+        //Iterate through the map and check ids
+        for(Map.Entry<Vm, Host> e : hoster.entrySet()) {
+            if (e.getKey().getId() == vmId && e.getKey().getUserId() == userId)
+                return e.getValue();
+
+        }
+        //Default
         return null;
     }
 }

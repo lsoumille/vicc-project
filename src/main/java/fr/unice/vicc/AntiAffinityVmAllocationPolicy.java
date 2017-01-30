@@ -11,9 +11,10 @@ import java.util.Map;
 /**
  * Created by lucas on 30/01/17.
  *
- * Role :
- * Overall Design and technical choices :
- * Complexity :
+ * Role : fault-tolerant to node failures
+ * Overall Design and technical choices : when we create a VM we check that
+ * there's no other VM with the same affinity on the same host
+ * Complexity : O(n.m) with n number of hosts and m number of VMs
  */
 public class AntiAffinityVmAllocationPolicy extends VmAllocationPolicy {
 
@@ -38,6 +39,24 @@ public class AntiAffinityVmAllocationPolicy extends VmAllocationPolicy {
 
     @Override
     public boolean allocateHostForVm(Vm vm) {
+        //Get the vm id
+        int id = vm.getId();
+        //Get the interval, equivalent to the affinity
+        int interval = id / 100;
+        for(Host h : getHostList()) {
+            boolean isSuitable = true;
+            for(Vm v : h.getVmList()) {
+                if((v.getId() / 100) == interval) {
+                    isSuitable = false;
+                    break;
+                }
+            }
+            if(isSuitable && h.vmCreate(vm)) {
+                hoster.put(vm, h);
+                return true;
+            }
+        }
+        //Default
         return false;
     }
 
@@ -53,16 +72,26 @@ public class AntiAffinityVmAllocationPolicy extends VmAllocationPolicy {
 
     @Override
     public void deallocateHostForVm(Vm vm) {
-
+        //Remove the VM on each host in the hoster
+        for(Host h : hoster.values()) {
+            h.vmDestroy(vm);
+        }
     }
 
     @Override
     public Host getHost(Vm vm) {
-        return null;
+        return vm.getHost();
     }
 
     @Override
-    public Host getHost(int i, int i1) {
+    public Host getHost(int vmId, int userId) {
+        //Iterate through the map and check ids
+        for(Map.Entry<Vm, Host> e : hoster.entrySet()) {
+            if (e.getKey().getId() == vmId && e.getKey().getUserId() == userId)
+                return e.getValue();
+
+        }
+        //Default
         return null;
     }
 }
