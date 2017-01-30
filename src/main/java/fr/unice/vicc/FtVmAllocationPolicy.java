@@ -9,18 +9,18 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Created by lucas on 30/01/17.
+ * @author Lucas Martinez
+ * @version 30/01/17.
  *
  * Role :
  * Overall Design and technical choices :
  * Complexity :
  */
-public class AntiAffinityVmAllocationPolicy extends VmAllocationPolicy {
-
+public class FtVmAllocationPolicy extends VmAllocationPolicy{
     /** The map to track the server that host each running VM. */
     private Map<Vm,Host> hoster;
 
-    public AntiAffinityVmAllocationPolicy(List<? extends Host> list) {
+    public FtVmAllocationPolicy(List<? extends Host> list) {
         super(list);
         hoster = new HashMap<>();
     }
