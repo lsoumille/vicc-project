@@ -11,7 +11,11 @@ import java.util.Map;
 
 /**
  * Created by fhermeni2 on 16/11/2015.
- * TODO Header class
+ *
+ * Role : Aim at discovering CloudSim API
+ * Overall Design and technical choices : Place a VM to the first host with sufficient resources
+ * Complexity : O(n) with n the number of hosts
+ *
  */
 public class NaiveVmAllocationPolicy extends VmAllocationPolicy {
 
