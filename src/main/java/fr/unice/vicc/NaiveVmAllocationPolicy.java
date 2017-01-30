@@ -37,13 +37,14 @@ public class NaiveVmAllocationPolicy extends VmAllocationPolicy {
     @Override
     public boolean allocateHostForVm(Vm vm) {
         //Get the host list
-        List<Host> lHosts = getHostList();
+        List<Host> lHosts = super.getHostList();
         //allocate to the first VM that has the resources
         for(int i = 0 ; i < lHosts.size() ; ++i) {
-            if (lHosts.get(i).vmCreate(vm))
+            if (lHosts.get(i).vmCreate(vm)) {
                 hoster.put(vm, lHosts.get(i));
                 //if the vm is created return true
                 return true;
+            }
         }
         //default
         return false;
@@ -70,12 +71,12 @@ public class NaiveVmAllocationPolicy extends VmAllocationPolicy {
 
     @Override
     public Host getHost(Vm vm) {
-        return hoster.get(vm);
+        return vm.getHost();
     }
 
     @Override
     public Host getHost(int vmId, int userId) {
-        //Iterate throught the map and check ids
+        //Iterate through the map and check ids
         for(Map.Entry<Vm, Host> e : hoster.entrySet()) {
             if (e.getKey().getId() == vmId && e.getKey().getUserId() == userId)
                 return e.getValue();
