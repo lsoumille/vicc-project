@@ -39,19 +39,21 @@ public class AntiAffinityVmAllocationPolicy extends VmAllocationPolicy {
 
     @Override
     public boolean allocateHostForVm(Vm vm) {
-        //Get the vm id
+        //Get the VM id
         int id = vm.getId();
-        //Get the interval, equivalent to the affinity
+        //Get the interval value that is equivalent to affinity
         int interval = id / 100;
         for(Host h : getHostList()) {
             boolean isSuitable = true;
             for(Vm v : h.getVmList()) {
-                if((v.getId() / 100) == interval) {
+                if ((v.getId() / 100) == interval) {
                     isSuitable = false;
                     break;
                 }
             }
-            if(isSuitable && h.vmCreate(vm)) {
+            //if the host has not a VM in the same interval then create it
+            if(isSuitable && h.isSuitableForVm(vm)) {
+                h.vmCreate(vm);
                 hoster.put(vm, h);
                 return true;
             }
