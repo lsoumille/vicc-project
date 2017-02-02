@@ -41,19 +41,19 @@ public class NextFitVmAllocationPolicy extends VmAllocationPolicy {
 
     @Override
     public boolean allocateHostForVm(Vm vm) {
-        List<Host> hList = super.getHostList();
+        List<Host> lHosts = super.getHostList();
         int cur = counter;
-        boolean fit = false;
+        /* boolean fit = false;
         Host curHost;
 
         //Next fit algo
         do {
-            curHost = hList.get(cur);
+            curHost = lHosts.get(cur);
             if (curHost.vmCreate(vm) == true) {
                 hoster.put(vm,curHost);
                 fit = true;
 
-                if (cur == hList.size() - 1) {
+                if (cur == lHosts.size() - 1) {
                     cur = 0;
                     counter = cur+1;
                 } else {
@@ -61,12 +61,28 @@ public class NextFitVmAllocationPolicy extends VmAllocationPolicy {
                 } break;
             } cur++;
 
-            if (cur > hList.size()-1) {
+            if (cur > lHosts.size()-1) {
                 cur = 0;
             }
-        } while (fit == false || cur < hList.size());
+        } while (fit == false || cur < lHosts.size());
 
-        return fit;
+        return fit; */
+
+        for (; cur < lHosts.size(); ++cur){
+            Host host = lHosts.get(cur);
+            if (host.vmCreate(vm)){
+                hoster.put(vm, host);
+                if (cur == lHosts.size() - 1){
+                    counter = 1;
+                } else {
+                    counter = cur + 1;
+                }
+                //if the vm is created return true
+                return true;
+            }
+        }
+
+        return false;
     }
 
     @Override
