@@ -40,10 +40,14 @@ public class NaiveVmAllocationPolicy extends VmAllocationPolicy {
 
     @Override
     public boolean allocateHostForVm(Vm vm) {
-        //Get the host list
+        //Get the hosts list
         List<Host> lHosts = super.getHostList();
+        boolean alloc = false;
+        int n = 0;
+        Host curHost;
+
         //allocate to the first VM that has the resources
-        for(int i = 0 ; i < lHosts.size() ; ++i) {
+        /* for(int i = 0 ; i < lHosts.size() ; ++i) {
             if (lHosts.get(i).isSuitableForVm(vm)) {
                 lHosts.get(i).vmCreate(vm);
                 hoster.put(vm, lHosts.get(i));
@@ -52,7 +56,18 @@ public class NaiveVmAllocationPolicy extends VmAllocationPolicy {
             }
         }
         //default
-        return false;
+        return false; */
+
+        do {
+            curHost = lHosts.get(n);
+            //host has sufficient free resources
+            if (curHost.vmCreate(vm)) {
+                hoster.put(vm,curHost);
+                alloc = true;
+                break;
+            } n++;
+        } while(alloc==false || n < lHosts.size());
+        return alloc;
     }
 
     @Override
@@ -76,7 +91,11 @@ public class NaiveVmAllocationPolicy extends VmAllocationPolicy {
 
     @Override
     public Host getHost(Vm vm) {
-        return vm.getHost();
+        for (Vm v : hoster.keySet()) {
+            if (v == vm) {
+                return hoster.get(vm);
+            }
+        } return null;
     }
 
     @Override
