@@ -52,8 +52,7 @@ public class AntiAffinityVmAllocationPolicy extends VmAllocationPolicy {
                 }
             }
             //if the host has not a VM in the same interval then create it
-            if(isSuitable && h.isSuitableForVm(vm)) {
-                h.vmCreate(vm);
+            if(isSuitable && h.vmCreate(vm)) {
                 hoster.put(vm, h);
                 return true;
             }
