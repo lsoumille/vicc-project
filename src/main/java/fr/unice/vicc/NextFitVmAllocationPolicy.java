@@ -4,6 +4,7 @@ import org.cloudbus.cloudsim.Host;
 import org.cloudbus.cloudsim.Vm;
 import org.cloudbus.cloudsim.VmAllocationPolicy;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -16,7 +17,7 @@ import java.util.Map;
  * Overall Design and technical choices :
  * Complexity :
  */
-public class NextFitVmAllocationPolicy extends VmAllocationPolicy{
+public class NextFitVmAllocationPolicy extends VmAllocationPolicy {
     /** The map to track the server that host each running VM. */
     private Map<Vm,Host> hoster;
 
@@ -36,14 +37,44 @@ public class NextFitVmAllocationPolicy extends VmAllocationPolicy{
         return super.getHostList();
     }
 
+    private static int counter = 0;
+
     @Override
     public boolean allocateHostForVm(Vm vm) {
-        return false;
+        List<Host> hList = super.getHostList();
+        int cur = counter;
+        boolean fit = false;
+        Host curHost;
+
+        //Next fit algo
+        do {
+            curHost = hList.get(cur);
+            if (curHost.vmCreate(vm) == true) {
+                hoster.put(vm,curHost);
+                fit = true;
+
+                if (cur == hList.size() - 1) {
+                    cur = 0;
+                    counter = cur+1;
+                } else {
+                    counter= cur+1;
+                } break;
+            } cur++;
+
+            if (cur > hList.size()-1) {
+                cur = 0;
+            }
+        } while (fit == false || cur < hList.size());
+
+        return fit;
     }
 
     @Override
     public boolean allocateHostForVm(Vm vm, Host host) {
-        return false;
+        if (host.vmCreate(vm)) {
+            hoster.put(vm, host);
+            return true;
+        } return false;
     }
 
     @Override
@@ -61,16 +92,21 @@ public class NextFitVmAllocationPolicy extends VmAllocationPolicy{
 
     @Override
     public Host getHost(Vm vm) {
-        return vm.getHost();
+
+        for (Vm v : hoster.keySet()) {
+            if (v == vm) {
+                return hoster.get(vm);
+            }
+        } return null;
     }
 
     @Override
     public Host getHost(int vmId, int userId) {
+
         //Iterate through the map and check ids
         for(Map.Entry<Vm, Host> e : hoster.entrySet()) {
             if (e.getKey().getId() == vmId && e.getKey().getUserId() == userId)
                 return e.getValue();
-
         }
         //Default
         return null;
