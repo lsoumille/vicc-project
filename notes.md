@@ -37,7 +37,7 @@ We observe indeed that we have fewer penalties with the second scheduler (~200â‚
 - Develop another algorithm based on a worst fit algorithm (worstFit flag) that balances with regards to both RAM and mips. Justify the method you choosed to consider the two dimensions and an evaluation metric.
 
 To consider both RAM and mips, we used a Map <HostID,[AvailableMIPS,AvailableRAM]>. This map is filled with all hosts in the hosts list.
-What we do in our algorithm is that we check for the host with highest mips and RAM. The "extraction" of the identifier of the host with biggest available mips and RAM is done through the biggestHost() method.
+What we do in our algorithm is that we check for the host with highest mips or RAM. This allows less penalties and therefore more revenues than if we had to pick the host with highest mips and RAM. The "extraction" of the identifier of the host with biggest available mips and RAM is done through the getBiggestHost() method.
 
 - Which algorithm performs the best in terms of reducing the SLA violation? Why ?
 

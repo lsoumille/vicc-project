@@ -15,7 +15,7 @@ import java.util.Map;
  * Role : Ensures fault tolerance to a single switch failure
  * Overall Design and technical choices : Create a VM on one host that is in G4 (MIPS 3720) and the next one on another host
  * that is in G5 (MIPS 5320)
- * Complexity : O(n) because with n the number of host
+ * Complexity : O(n) with n the number of hosts
  */
 public class DrVmAllocationPolicy extends VmAllocationPolicy {
 
