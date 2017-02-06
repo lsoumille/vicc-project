@@ -14,6 +14,12 @@
 
 This algorithm implies that there will be more hosts turned on because of the need of fault-tolerance, also we can assume that there will be less capacity because a lot of the cluster will be used for replicas.
 
+## Fault-tolerance for standalone VMs ##
+
+- How can we report the infrastructure load in that particular context ?
+
+In a normal state, the load is calculated according to the started VMs. In our case, we need to consider also the reserved resources for the fault tolerant VMs. So the infrastructure load must be reported like the sum of resources of the started VMs and the reserved resources.
+
 ## Load balancing ##
 
 - Develop a scheduler that performs load balancing using a next fit algorithm (flag nextFit). You should observe fewer penalties with regards to the naive scheduler.
