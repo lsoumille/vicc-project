@@ -1,5 +1,6 @@
 package fr.unice.vicc;
 
+import org.apache.commons.math3.util.Pair;
 import org.cloudbus.cloudsim.Host;
 import org.cloudbus.cloudsim.Vm;
 import org.cloudbus.cloudsim.VmAllocationPolicy;
@@ -12,17 +13,22 @@ import java.util.Map;
  * @author Lucas Martinez
  * @version 30/01/17.
  *
- * Role :
- * Overall Design and technical choices :
- * Complexity :
+ * Role : Ensure that if a node crash, another has the resources to restart it
+ * Overall Design and technical choices : Save the CPU and the RAM used in a map et used this map to determine which host is suitable
+ * Complexity : O(n) in most cases with n the number of host
  */
 public class FtVmAllocationPolicy extends VmAllocationPolicy{
     /** The map to track the server that host each running VM. */
     private Map<Vm,Host> hoster;
 
+    /** Save the resources used and booked for the host */
+    private Map<Host, Pair<Integer,Double>> hostWithReservedRes;
+
+
     public FtVmAllocationPolicy(List<? extends Host> list) {
         super(list);
         hoster = new HashMap<>();
+        hostWithReservedRes = new HashMap<>();
     }
 
     @Override
@@ -38,6 +44,18 @@ public class FtVmAllocationPolicy extends VmAllocationPolicy{
 
     @Override
     public boolean allocateHostForVm(Vm vm) {
+        Host h = getSuitableHost(vm);
+        int id = vm.getId();
+        if (h != null && h.vmCreate(vm)) {
+            hoster.put(vm, h);
+            updateResourcesMap(h, vm);
+            //If the vm is a multiple of 10
+            if ((id % 10) == 0) {
+                Host hForReplica = getSuitableHost(vm);
+                updateResourcesMap(hForReplica, vm);
+            }
+            return true;
+        }
         return false;
     }
 
@@ -74,5 +92,31 @@ public class FtVmAllocationPolicy extends VmAllocationPolicy{
         }
         //Default
         return null;
+    }
+
+    private Host getSuitableHost(Vm vm) {
+        int ramWanted = vm.getRam();
+        double mipsWanted = vm.getMips();
+        for(Host h : getHostList()) {
+            Pair<Integer, Double> hRes = hostWithReservedRes.get(h);
+            //Check if the vm could be hosted
+            if(hRes == null || ((h.getTotalMips() - hRes.getValue()) > mipsWanted
+                            && ((h.getRam() - hRes.getKey()) > ramWanted))) {
+                return h;
+            }
+        }
+        //Default
+        return null;
+    }
+
+    private void updateResourcesMap(Host h, Vm vm) {
+        //If the host doesn't contain the host, create it
+        if (!hostWithReservedRes.containsKey(h)) {
+            hostWithReservedRes.put(h, new Pair<Integer, Double>(vm.getRam(), vm.getMips()));
+        } else {
+            //update the values for the host
+            Pair<Integer, Double> e = hostWithReservedRes.get(h);
+            hostWithReservedRes.put(h, new Pair<Integer, Double>(e.getKey() + vm.getRam(), e.getValue() + vm.getMips()));
+        }
     }
 }
