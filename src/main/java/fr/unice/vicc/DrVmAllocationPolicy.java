@@ -12,14 +12,20 @@ import java.util.Map;
  * @author Lucas Martinez
  * @version 30/01/17.
  *
- * Role :
- * Overall Design and technical choices :
- * Complexity :
+ * Role : Ensures fault tolerance to a single switch failure
+ * Overall Design and technical choices : Create a VM on one host that is in G4 (MIPS 3720) and the next one on another host
+ * that is in G5 (MIPS 5320)
+ * Complexity : O(n) because with n the number of host
  */
 public class DrVmAllocationPolicy extends VmAllocationPolicy {
 
     /** The map to track the server that host each running VM. */
     private Map<Vm,Host> hoster;
+    /** Boolean to know what is the last swith used*/
+    private boolean previousG4 = false;
+
+    private final double MIPSG4 = 3720.0;
+    private final double MIPSG5 = 5320.0;
 
     public DrVmAllocationPolicy(List<? extends Host> list) {
         super(list);
@@ -39,11 +45,26 @@ public class DrVmAllocationPolicy extends VmAllocationPolicy {
 
     @Override
     public boolean allocateHostForVm(Vm vm) {
+        for(Host h : getHostList()) {
+            double mips = h.getTotalMips();
+            if ((previousG4 && mips == MIPSG5 && h.vmCreate(vm)) || (!previousG4 && mips == MIPSG4 && h.vmCreate(vm))) {
+                //VM created
+                previousG4 = !previousG4;
+                hoster.put(vm, h);
+                return true;
+            }
+        }
         return false;
     }
 
     @Override
     public boolean allocateHostForVm(Vm vm, Host host) {
+        //Forced the VM to the host
+        //return true if the vm is created
+        if (host.vmCreate(vm)) {
+            hoster.put(vm, host);
+            return true;
+        }
         return false;
     }
 
