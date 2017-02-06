@@ -46,7 +46,7 @@ public class NextFitVmAllocationPolicy extends VmAllocationPolicy {
         List<Host> lHosts = super.getHostList();
         int cur = counter;
 
-        for (; cur < lHosts.size(); ++cur){
+        for ( ; cur < lHosts.size() ; ++cur){
             Host host = lHosts.get(cur);
             if (host.vmCreate(vm)){
                 hoster.put(vm, host);

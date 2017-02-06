@@ -52,6 +52,14 @@ public class FtVmAllocationPolicy extends VmAllocationPolicy{
             //If the vm is a multiple of 10
             if ((id % 10) == 0) {
                 Host hForReplica = getSuitableHost(vm);
+                //impossible to save resources for the fault tolerant
+                //Delete the VM
+                if (hForReplica == null) {
+                    h.vmDestroy(vm);
+                    hoster.remove(vm);
+                    deleteResources(h, vm);
+                    return false;
+                }
                 updateResourcesMap(hForReplica, vm);
             }
             return true;
@@ -118,5 +126,13 @@ public class FtVmAllocationPolicy extends VmAllocationPolicy{
             Pair<Integer, Double> e = hostWithReservedRes.get(h);
             hostWithReservedRes.put(h, new Pair<Integer, Double>(e.getKey() + vm.getRam(), e.getValue() + vm.getMips()));
         }
+    }
+
+    private void deleteResources(Host h, Vm vm) {
+        if(!hostWithReservedRes.containsKey(h)) {
+            return;
+        }
+        Pair<Integer, Double> e = hostWithReservedRes.get(h);
+        hostWithReservedRes.put(h, new Pair<Integer, Double>(e.getKey() - vm.getRam(), e.getValue() - vm.getMips()));
     }
 }
