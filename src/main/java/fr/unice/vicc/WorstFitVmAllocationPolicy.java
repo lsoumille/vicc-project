@@ -13,9 +13,11 @@ import java.util.Map;
  * @author Lucas Martinez
  * @version 30/01/17.
  *
- * Role :
- * Overall Design and technical choices :
- * Complexity :
+ * Role : Perform load balancing using a worst fit algorithm.
+ * Overall Design and technical choices : We create a map with <HostID, [MIPS, RAM]> containing all the hosts
+ * Then we pick the host with the most resources available thanks to the getBiggestHost function and we put a VM
+ * We iterate on the hosts with the getBiggestHost method in a infinite loop
+ * Complexity : O(n) with n the number of hosts
  */
 public class WorstFitVmAllocationPolicy extends VmAllocationPolicy{
     /** The map to track the server that host each running VM. */
@@ -38,19 +40,19 @@ public class WorstFitVmAllocationPolicy extends VmAllocationPolicy{
     }
 
     //return host ID with biggest values for mips and ram
-    public int biggestHost(Map<Integer,ArrayList> map) {
-        int max0 = 0;
-        int max1 = 0;
+    private int getBiggestHost(Map<Integer,ArrayList> map) {
+        int maxMIPS = 0;
+        int maxRAM = 0;
         int biggerHost = 0;
 
         //get the host with biggest values for mips and ram
         for (Map.Entry<Integer,ArrayList> m : map.entrySet()) {
-            int key = m.getKey();
-            ArrayList<Integer> value = m.getValue();
-            if (value.get(0) > max0 || value.get(1) > max1) {
-                max0 = value.get(0);
-                max1 = value.get(1);
-                biggerHost = key;
+            int currHost = m.getKey();
+            ArrayList<Integer> values = m.getValue();
+            if (values.get(0) > maxMIPS || values.get(1) > maxRAM) {
+                maxMIPS = values.get(0);
+                maxRAM = values.get(1);
+                biggerHost = currHost;
             }
         }
         return biggerHost;
@@ -60,7 +62,6 @@ public class WorstFitVmAllocationPolicy extends VmAllocationPolicy{
     public boolean allocateHostForVm(Vm vm) {
         Map<Integer,ArrayList> map = new HashMap<>();
         List<Host> lHosts = super.getHostList();
-        boolean alloc = false;
 
         //create a map <HostID , [MIPS,RAM]>
         for (Host curH : lHosts) {
@@ -71,22 +72,20 @@ public class WorstFitVmAllocationPolicy extends VmAllocationPolicy{
         }
 
         //we get the host with biggest mips and ram
-        int curHost = biggestHost(map);
+        int curHost = getBiggestHost(map);
+        Host host = lHosts.get(curHost);
 
-        do {
-            Host host = lHosts.get(curHost);
+        while (true){
             if (host.vmCreate(vm)) {
                 hoster.put(vm, host);
-                alloc = true;
+                return true;
             } else {
                 //we get the next host in the map with biggest mips and ram
                 map.remove(curHost);
-                curHost = biggestHost(map);
+                curHost = getBiggestHost(map);
                 host = lHosts.get(curHost);
             }
-        } while(alloc==false);
-
-        return alloc;
+        }
     }
 
     @Override
