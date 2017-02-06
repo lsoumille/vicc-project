@@ -38,12 +38,41 @@ public class NoViolationsVmAllocationPolicy extends VmAllocationPolicy{
 
     @Override
     public boolean allocateHostForVm(Vm vm) {
+        List<Host> lHosts = super.getHostList();
+        int cur = 0;
+
+        for (; cur < lHosts.size(); ++cur){
+            Host host = lHosts.get(cur);
+            if (host.isSuitableForVm(vm)) { //look commented code of isSuitableForVm below
+                if (host.vmCreate(vm)) {
+                    hoster.put(vm, host);
+                    return true;
+                }
+            }
+        }
+
         return false;
     }
 
+     /**
+     * Checks if is suitable for vm.
+     *
+     * @param vm the vm
+     * @return true, if is suitable for vm
+
+    public boolean isSuitableForVm(Vm vm) {
+        return (getVmScheduler().getPeCapacity() >= vm.getCurrentRequestedMaxMips()
+                && getVmScheduler().getAvailableMips() >= vm.getCurrentRequestedTotalMips()
+                && getRamProvisioner().isSuitableForVm(vm, vm.getCurrentRequestedRam()) && getBwProvisioner()
+                .isSuitableForVm(vm, vm.getCurrentRequestedBw()));
+    } */
+
     @Override
     public boolean allocateHostForVm(Vm vm, Host host) {
-        return false;
+        if (host.vmCreate(vm)) {
+            hoster.put(vm, host);
+            return true;
+        } return false;
     }
 
     @Override
@@ -61,7 +90,11 @@ public class NoViolationsVmAllocationPolicy extends VmAllocationPolicy{
 
     @Override
     public Host getHost(Vm vm) {
-        return vm.getHost();
+        for (Vm v : hoster.keySet()) {
+            if (v == vm) {
+                return hoster.get(vm);
+            }
+        } return null;
     }
 
     @Override
