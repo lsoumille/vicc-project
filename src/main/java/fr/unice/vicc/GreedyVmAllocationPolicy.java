@@ -4,9 +4,7 @@ import org.cloudbus.cloudsim.Host;
 import org.cloudbus.cloudsim.Vm;
 import org.cloudbus.cloudsim.VmAllocationPolicy;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author Lucas Martinez
@@ -31,13 +29,27 @@ public class GreedyVmAllocationPolicy extends VmAllocationPolicy{
         hoster = new HashMap<>();
     }
 
-    @Override
-    public <T extends Host> List<T> getHostList() {
-        return super.getHostList();
+    public List<Host> getHostList() {
+        //Sort the list according to the available mips
+        List<Host> allHosts = super.getHostList();
+        Collections.sort(allHosts, new Comparator<Host>() {
+            @Override
+            public int compare(Host host, Host t1) {
+                return host.getTotalMips() < t1.getTotalMips() ? 1 : host.getTotalMips() > t1.getTotalMips() ? -1 : 0;
+            }
+        });
+        return allHosts;
     }
 
     @Override
     public boolean allocateHostForVm(Vm vm) {
+
+        for(Host h : getHostList()) {
+            if (h.vmCreate(vm)) {
+                    hoster.put(vm, h);
+                    return true;
+            }
+        }
         return false;
     }
 
