@@ -12,9 +12,11 @@ import java.util.Map;
  * @author Lucas Martinez
  * @version 30/01/17.
  *
- * Role :
- * Overall Design and technical choices :
- * Complexity :
+ * Role : Ensure that there can be no SLA violation.
+ * Overall Design and technical choices : We used the isSuitableForVm() method that returns true if
+ * a host is suitable for vm regarding its parameters like processing elements capacity and available mips.
+ * The code of this function is commented below.
+ * Complexity : O(n) with n the number of hosts.
  */
 public class NoViolationsVmAllocationPolicy extends VmAllocationPolicy{
     /** The map to track the server that host each running VM. */
