@@ -43,7 +43,7 @@ public class WorstFitVmAllocationPolicy extends VmAllocationPolicy{
     private int getBiggestHost(Map<Integer,ArrayList> map) {
         int maxMIPS = 0;
         int maxRAM = 0;
-        int biggerHost = 0;
+        int biggerHost = -1;
 
         //get the host with biggest values for mips and ram
         for (Map.Entry<Integer,ArrayList> m : map.entrySet()) {
@@ -71,21 +71,18 @@ public class WorstFitVmAllocationPolicy extends VmAllocationPolicy{
             map.put(curH.getId(),l);
         }
 
-        //we get the host with biggest mips and ram
-        int curHost = getBiggestHost(map);
-        Host host = lHosts.get(curHost);
-
-        while (true){
+        int curHost;
+        //Get the bigger host
+        while ((curHost = getBiggestHost(map)) != -1) {
+            Host host = lHosts.get(curHost);
             if (host.vmCreate(vm)) {
                 hoster.put(vm, host);
                 return true;
             } else {
-                //we get the next host in the map with biggest mips and ram
                 map.remove(curHost);
-                curHost = getBiggestHost(map);
-                host = lHosts.get(curHost);
             }
         }
+        return false;
     }
 
     @Override

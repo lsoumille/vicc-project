@@ -43,7 +43,6 @@ public class GreedyVmAllocationPolicy extends VmAllocationPolicy{
 
     @Override
     public boolean allocateHostForVm(Vm vm) {
-
         for(Host h : getHostList()) {
             if (h.vmCreate(vm)) {
                     hoster.put(vm, h);

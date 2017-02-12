@@ -8,17 +8,49 @@
 
 ## Comments
 
+## Naive ##
+
+##### Output
+
+Incomes:    12398,59€
+Penalties:  402,16€
+Energy:     2645,63€
+Revenue:    9350,80€
+
 ## Fault-tolerance for replicated  applications ##
 
 - What is the impact of such an algorithm (antiAffinity) over the cluster hosting capacity ? Why ?
 
 This algorithm implies that there will be more hosts turned on because of the need of fault-tolerance, also we can assume that there will be less capacity because a lot of the cluster will be used for replicas.
 
+##### Output
+
+Incomes:    12398,59€
+Penalties:  200,95€
+Energy:     2688,44€
+Revenue:    9509,21€
+
+## Preparing for disaster recovery
+
+##### Output
+
+Incomes:    12398,59€
+Penalties:  2223,24€
+Energy:     2649,07€
+Revenue:    7526,28€
+
 ## Fault-tolerance for standalone VMs ##
 
 - How can we report the infrastructure load in that particular context ?
 
 In a normal state, the load is calculated according to the started VMs. In our case, we need to consider also the reserved resources for the fault tolerant VMs. So the infrastructure load must be reported like the sum of resources of the started VMs and the reserved resources.
+
+##### Output
+
+Incomes:    12398,59€
+Penalties:  161,72€
+Energy:     2911,59€
+Revenue:    9325,28€
 
 ## Load balancing ##
 
@@ -49,3 +81,44 @@ What we do in our algorithm is that we check for the host with highest mips or R
 
 It is the worst fit algorithm that performs the best in terms of reducing the SLA violation, because this algorithm assigns each virtual machine to a physical machine with the greatest free capacity (mips and RAM).
 It gives a better load balanced allocation than with the next fit algorithm.
+
+##### Outputs
+
+Next Fit :
+Incomes:    12398,59€
+Penalties:  208,26€
+Energy:     3288,96€
+Revenue:    8901,37€
+
+Worst Fit :
+Incomes:    12398,59€
+Penalties:  6,06€
+Energy:     3264,77€
+Revenue:    9127,77€
+
+## Performance satisfaction ##
+
+##### Output
+
+Incomes:    12398,59€
+Penalties:  0,00€
+Energy:     2868,74€
+Revenue:    9529,85€
+
+## Energy-efficient scheduler ##
+
+##### Output
+
+Incomes:    12398,59€
+Penalties:  1413,50€
+Energy:     2604,30€
+Revenue:    8380,79€
+
+## Greedy scheduler ##
+
+##### Output
+
+Incomes:    12398,59€
+Penalties:  31,57€
+Energy:     2686,64€
+Revenue:    9680,38€

@@ -44,14 +44,14 @@ public class FtVmAllocationPolicy extends VmAllocationPolicy{
 
     @Override
     public boolean allocateHostForVm(Vm vm) {
-        Host h = getSuitableHost(vm);
+        Host h = getSuitableHost(vm, null);
         int id = vm.getId();
         if (h != null && h.vmCreate(vm)) {
             hoster.put(vm, h);
             updateResourcesMap(h, vm);
             //If the vm is a multiple of 10
             if ((id % 10) == 0) {
-                Host hForReplica = getSuitableHost(vm);
+                Host hForReplica = getSuitableHost(vm, h);
                 //impossible to save resources for the fault tolerant
                 //Delete the VM
                 if (hForReplica == null) {
@@ -102,10 +102,11 @@ public class FtVmAllocationPolicy extends VmAllocationPolicy{
         return null;
     }
 
-    private Host getSuitableHost(Vm vm) {
+    private Host getSuitableHost(Vm vm, Host alreadyUsed) {
         int ramWanted = vm.getRam();
         double mipsWanted = vm.getMips();
         for(Host h : getHostList()) {
+            if(h.equals(alreadyUsed)) continue;
             Pair<Integer, Double> hRes = hostWithReservedRes.get(h);
             //Check if the vm could be hosted
             if(hRes == null || ((h.getTotalMips() - hRes.getValue()) > mipsWanted
