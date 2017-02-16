@@ -11,9 +11,9 @@ import java.util.*;
  * @author Lucas Martinez
  * @version 30/01/17.
  *
- * Role :
- * Overall Design and technical choices :
- * Complexity :
+ * Role : Scheduler that reduces the overall energy consumption. It doesn't take to account the SLA violations
+ * Overall Design and technical choices : Pack the VM on the minimum amount of host on the hosts that consume less energy (with the smallest MIPS number).
+ * Complexity : Sorting the host list is nlog(n) and the allocation method is O(n) (with n the host number)
  */
 public class EnergyVmAllocationPolicy extends VmAllocationPolicy{
     /** The map to track the server that host each running VM. */
@@ -31,7 +31,7 @@ public class EnergyVmAllocationPolicy extends VmAllocationPolicy{
     }
 
     public List<Host> getHostList() {
-        //Sort the list according to the available mips (ascending
+        //Sort the list according to the total mips (ascending)
         List<Host> allHosts = super.getHostList();
         Collections.sort(allHosts, new Comparator<Host>() {
             @Override

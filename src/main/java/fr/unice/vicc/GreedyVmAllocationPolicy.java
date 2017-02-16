@@ -10,9 +10,9 @@ import java.util.*;
  * @author Lucas Martinez
  * @version 30/01/17.
  *
- * Role :
- * Overall Design and technical choices :
- * Complexity :
+ * Role : Scheduler that takes to account the energy consumption and the possible penalties to maximize revenues
+ * Overall Design and technical choices : Pack the VM on the minimum amount of host on the hosts with the most resources
+ * Complexity : Sorting the host list is nlog(n) and the allocation method is O(n) (with n the host number)
  */
 public class GreedyVmAllocationPolicy extends VmAllocationPolicy{
     /** The map to track the server that host each running VM. */
@@ -30,7 +30,7 @@ public class GreedyVmAllocationPolicy extends VmAllocationPolicy{
     }
 
     public List<Host> getHostList() {
-        //Sort the list according to the available mips
+        //Sort the list according to the available mips (descending)
         List<Host> allHosts = super.getHostList();
         Collections.sort(allHosts, new Comparator<Host>() {
             @Override
@@ -54,6 +54,10 @@ public class GreedyVmAllocationPolicy extends VmAllocationPolicy{
 
     @Override
     public boolean allocateHostForVm(Vm vm, Host host) {
+        if (host.vmCreate(vm)) {
+            hoster.put(vm, host);
+            return true;
+        }
         return false;
     }
 
