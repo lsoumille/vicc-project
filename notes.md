@@ -65,6 +65,8 @@ Revenue:    9325,28€
 
 - Develop a scheduler that performs load balancing using a next fit algorithm (flag nextFit). You should observe fewer penalties with regards to the naive scheduler.
 
+For the next fit algorithm, the idea is to store the last host ID where the VM was allocated. In our implementation, the search for the next allocation starts at host ID+1. If we arrive at the last host and the allocation is not possible, we start again at the beginning of the hosts list (at host ID=0).
+
 With the naive method, the output for all days is the following:
 
 Incomes:    12398,59€
@@ -106,6 +108,8 @@ Energy:     3264,77€
 Revenue:    9127,77€
 
 ## Performance satisfaction ##
+
+The idea here is to ensure there can be no SLA violations. For the implementation of the algorithm, we used the isSuitableForVm() function which returns true if a host is suitable for a vm, regarding its parameters like processing elements capacity and available mips. If the host is suitable for the vm, we do the allocation. We obtained the following output :
 
 ##### Output
 
