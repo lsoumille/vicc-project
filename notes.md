@@ -10,6 +10,10 @@
 
 ## Naive ##
 
+##### Principle
+
+The scheduler places each VM to the first suitable host
+
 ##### Output
 
 Incomes:    12398,59€
@@ -19,9 +23,9 @@ Revenue:    9350,80€
 
 ## Fault-tolerance for replicated  applications ##
 
-- What is the impact of such an algorithm (antiAffinity) over the cluster hosting capacity ? Why ?
+##### Principle
 
-This algorithm implies that there will be more hosts turned on because of the need of fault-tolerance, also we can assume that there will be less capacity because a lot of the cluster will be used for replicas.
+Scheduler that supports the fault tolerance for replicated applications. Before placing the VM, we check if any other VM in the same interval are already hosted on this node.
 
 ##### Output
 
@@ -29,6 +33,11 @@ Incomes:    12398,59€
 Penalties:  200,95€
 Energy:     2688,44€
 Revenue:    9509,21€
+
+- What is the impact of such an algorithm (antiAffinity) over the cluster hosting capacity ? Why ?
+
+This algorithm implies that there will be more hosts turned on because of the need of fault-tolerance, also we can assume that there will be less capacity because a lot of the cluster will be used for replicas.
+
 
 ## Preparing for disaster recovery
 
