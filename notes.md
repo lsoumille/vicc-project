@@ -12,7 +12,7 @@
 
 ##### Principle
 
-The scheduler places each VM to the first suitable host
+The scheduler places each VM to the first suitable host.
 
 ##### Output
 
@@ -25,7 +25,7 @@ Revenue:    9350,80€
 
 ##### Principle
 
-Scheduler that supports the fault tolerance for replicated applications. Before placing the VM, we check if any other VM in the same interval are already hosted on this node.
+Scheduler that supports the fault tolerance for replicated applications. Before placing the VM, we check if any other VM in the same interval is already hosted on this node.
 
 ##### Output
 
@@ -41,6 +41,10 @@ This algorithm implies that there will be more hosts turned on because of the ne
 
 ## Preparing for disaster recovery
 
+##### Principle
+
+Scheduler that supports the fault tolerance of switches. We assume that the host with 3720 mips are on a different network than the host with 5320 mips. To achieve this objective, we put a VM on a host in the first network, the next one in the second network and so on. 
+
 ##### Output
 
 Incomes:    12398,59€
@@ -50,9 +54,10 @@ Revenue:    7526,28€
 
 ## Fault-tolerance for standalone VMs ##
 
-- How can we report the infrastructure load in that particular context ?
+##### Principle
 
-In a normal state, the load is calculated according to the started VMs. In our case, we need to consider also the reserved resources for the fault tolerant VMs. So the infrastructure load must be reported like the sum of resources of the started VMs and the reserved resources.
+Scheduler that supports the fault tolerance without replica. When a VM is assigned on a node, another space is booked on another node in order to restart the VM in case of failure. We need to figure out for each new VM if a host is suitable for it that's why we store the booked resources in a map.    
+
 
 ##### Output
 
@@ -60,6 +65,11 @@ Incomes:    12398,59€
 Penalties:  161,72€
 Energy:     2911,59€
 Revenue:    9325,28€
+
+- How can we report the infrastructure load in that particular context ?
+
+In a normal state, the load is calculated according to the started VMs. In our case, we need to consider also the reserved resources for the fault tolerant VMs. So the infrastructure load must be reported like the sum of resources of the started VMs and the reserved resources.
+
 
 ## Load balancing ##
 
@@ -120,6 +130,10 @@ Revenue:    9529,85€
 
 ## Energy-efficient scheduler ##
 
+##### Principle
+
+Scheduler that reduces the overall energy consumption. We pack all the VMs in the minimum number of nodes. We try to put the VM on the node with the least total mips because they consume less energy. 
+
 ##### Output
 
 Incomes:    12398,59€
@@ -129,9 +143,19 @@ Revenue:    8380,79€
 
 ## Greedy scheduler ##
 
+##### Principle
+
+Scheduler that maximizes revenues. The first objective is energy savings so we pack the VM on the minimum number of nodes like the energy efficient schedulers. We've seen that the energy-efficient scheduler has a lot of penalties because when the VM client asked for more resources the host (with small amount of mips) was already overloaded. The second objective here is to avoid the overload in order to avoid the penalties. The solution is to put the VM on the node with the max total mips amount instead of the minimum number.   
+
 ##### Output
 
 Incomes:    12398,59€
 Penalties:  31,57€
 Energy:     2686,64€
 Revenue:    9680,38€
+
+##### Complexity
+
+The VM placement method is like the naive one so the complexity is O(n) with n the number of hosts. But the previous step was to sort the host list to obtain a descending order on the mips value. The Java method sort guarantees a complexity of O(nlogn) with n the number of hosts.
+The total complexity for this algorithm is O(n + nlogn) ≈ O(nlogn)
+
