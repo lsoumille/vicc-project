@@ -159,3 +159,6 @@ Revenue:    9680,38€
 The VM placement method is like the naive one so the complexity is O(n) with n the number of hosts. But the previous step was to sort the host list to obtain a descending order on the mips value. The Java method sort guarantees a complexity of O(nlogn) with n the number of hosts.
 The total complexity for this algorithm is O(n + nlogn) ≈ O(nlogn)
 
+## Feedback on the course ##
+
+The lectures and the project were interesting but we were not fond of the paper explanation and oral exam especially when it isn't really valued in the final grade, doing a full lecture only for these presentations was really exhausting and we couldn't be focused all the way through. Too bad we were not able to do the Amazon lab because that would have been really interesting.
